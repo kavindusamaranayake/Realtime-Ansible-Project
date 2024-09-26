@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Create EC2 instances
+      amazon.aws.ec2_instance:
+        name: "{{ item.name }}"
+        key_name: "iam-kavindu"
+        instance_type: t2.micro
+        security_group: "default"
+        region: us-east-1
+        aws_access_key: "{{ ec2_access_key }}"  # From vault or set elsewhere
+        aws_secret_key: "{{ ec2_secret_key }}"  # From vault or set elsewhere
+        network:
+          assign_public_ip: true
+        image_id: "{{ item.image }}"
+        tags:
+          environment: "{{ item.name }}"
+      loop:
+        - { image: "ami-0ebfd941bbafe70c6", name: "Manage-node-1-centOs" }  # CentOS instance image
+        - { image: "ami-0e86e20dae9224db8", name: "Manage-node-2-ubuntu" }  # Ubuntu instance image
+        - { image: "ami-0e86e20dae9224db8", name: "Manage-node-3-ubuntu" }  # Ubuntu instance image
+
